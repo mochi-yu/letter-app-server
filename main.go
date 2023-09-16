@@ -1,11 +1,11 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 
 	"github.com/mochi-yu/dena-autumn-server/config"
-	"github.com/mochi-yu/dena-autumn-server/handler"
 	"github.com/rs/cors"
 )
 
@@ -16,9 +16,11 @@ func main() {
 	}
 	log.Println(cfg.Port)
 
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/", handler.JsontestHandle)
+	mux, cleanup, err := NewMux(context.Background(), cfg)
+	defer cleanup()
+	if err != nil {
+		log.Fatalf("main: NewMux error: %v", err)
+	}
 
 	// CORSの設定
 	c := cors.Default()
