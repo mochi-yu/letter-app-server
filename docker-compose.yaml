@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     ports:
-      - 8080:8080
+      - 51234:8080
     stdin_open: true
     tty: true
     volumes:
