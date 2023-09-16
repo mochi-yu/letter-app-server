@@ -10,11 +10,23 @@ import (
 )
 
 func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), error) {
-	mux := chi.NewRouter()
-	mux.HandleFunc("/", handler.JsontestHandle)
-	mux.Route("/letter", func(r chi.Router) {
-		r.Post("/", handler.PostLetterHandler)
-		r.Get("/{letterId}", handler.GetLetterHandler) // GET /articles
+	r := chi.NewRouter()
+	r.HandleFunc("/", handler.JsonTest)
+
+	// db, cleanup, err := repository.New(ctx, cfg)
+	// if err != nil {
+	// 	return nil, cleanup, err
+	// }
+	pl := &handler.PostLetter{
+		Service: &handler.PostLetterServiceMock{},
+	}
+	gl := &handler.GetLetter{
+		Service: &handler.GetLetterServiceMock{},
+	}
+
+	r.Route("/letter", func(r chi.Router) {
+		r.Post("/", pl.ServeHTTP)          // 作成した手紙の投稿
+		r.Get("/{letterID}", gl.ServeHTTP) // 手紙の読み込み
 	})
-	return mux, func() {}, nil
+	return r, func() {}, nil
 }

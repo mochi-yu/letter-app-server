@@ -2,7 +2,7 @@ package handler
 
 import "net/http"
 
-func JsontestHandle(w http.ResponseWriter, r *http.Request) {
+func JsonTest(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	test := struct {
 		Hello string `json:"Hello"`
@@ -10,5 +10,5 @@ func JsontestHandle(w http.ResponseWriter, r *http.Request) {
 		Hello: "World",
 	}
 
-	RespondJSON(ctx, w, &test, http.StatusOK)
+	RespondJSON(ctx, w, test, http.StatusOK)
 }

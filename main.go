@@ -14,7 +14,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("main: env config load failed: %v", err)
 	}
-	log.Println(cfg.Port)
 
 	mux, cleanup, err := NewMux(context.Background(), cfg)
 	defer cleanup()
@@ -24,7 +23,8 @@ func main() {
 
 	// CORSの設定
 	c := cors.Default()
-	handler := c.Handler(mux)
+	corsHandler := c.Handler(mux)
 
-	log.Fatal(http.ListenAndServe(":8080", handler))
+	log.Println("listen: ", cfg.Port)
+	log.Fatal(http.ListenAndServe(":8080", corsHandler))
 }
