@@ -1,19 +1,28 @@
 package repository
 
 import (
+	"context"
+	"errors"
+	"fmt"
+
+	"github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 )
 
 // データの挿入処理
-func (ms *MySQL) InsertLetterData(letterContent string) (letterId string, err error) {
+func (r *Repository) PostLetter(ctx context.Context, letterContent []byte) (letterID string, err error) {
 	uuid, err := uuid.NewRandom()
 	if err != nil {
 		return "", err
 	}
 
-	query := "INSERT INTO LetterList(LetterID, LetterContent) VALUES(?, ?, ?)"
-	_, err = ms.db.Exec(query, uuid.String(), letterContent)
+	query := "INSERT INTO LetterList (LetterID, LetterContent) VALUES(?, ?)"
+	_, err = r.DB.ExecContext(ctx, query, uuid.String(), string(letterContent))
 	if err != nil {
+		var mysqlErr *mysql.MySQLError
+		if errors.As(err, &mysqlErr) && mysqlErr.Number == ErrCodeMySQLDuplicateEntry {
+			return "", fmt.Errorf("PostLetter: duplicate UUID")
+		}
 		return "", err
 	}
 
@@ -21,19 +30,14 @@ func (ms *MySQL) InsertLetterData(letterContent string) (letterId string, err er
 }
 
 // データの取得処理
-func (ms *MySQL) GetLetterData(letterId string) (string, error) {
-	var letterContent string
+func (r *Repository) GetLetter(ctx context.Context, letterID string) ([]byte, error) {
 
-	rows, err := ms.db.Query("SELECT LetterContent FROM LetterList WHERE LetterID = ?", letterId)
-	if err != nil {
-		return "", err
-	}
-	defer rows.Close()
+	query := "SELECT LetterContent FROM LetterList WHERE LetterID = ?"
+	row := r.DB.QueryRowContext(ctx, query, letterID)
 
-	for rows.Next() {
-		if err := rows.Scan(&letterContent); err != nil {
-			return "", err
-		}
+	var letterContent []byte
+	if err := row.Scan(&letterContent); err != nil {
+		return nil, err
 	}
 
 	return letterContent, nil

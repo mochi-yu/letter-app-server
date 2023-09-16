@@ -16,12 +16,13 @@ func (gl *GetLetter) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: validate
 
-	// TODO: 構造体で帰ってきて欲しい
-	obj, err := gl.Service.GetLetter(ctx, letterID)
+	strokes, err := gl.Service.GetLetter(ctx, letterID)
 	if err != nil {
 		RespondJSON(ctx, w, &ErrResponse{
 			Message: err.Error(),
 		}, http.StatusInternalServerError)
+		return
 	}
-	RespondJSON(ctx, w, &obj, http.StatusOK)
+
+	RespondJSON(ctx, w, strokes, http.StatusOK)
 }

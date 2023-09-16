@@ -7,21 +7,27 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/mochi-yu/dena-autumn-server/config"
 	"github.com/mochi-yu/dena-autumn-server/handler"
+	"github.com/mochi-yu/dena-autumn-server/repository"
+	"github.com/mochi-yu/dena-autumn-server/service"
 )
 
 func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), error) {
 	r := chi.NewRouter()
 	r.HandleFunc("/", handler.JsonTest)
 
-	// db, cleanup, err := repository.New(ctx, cfg)
-	// if err != nil {
-	// 	return nil, cleanup, err
-	// }
+	db, cleanup, err := repository.New(ctx, cfg)
+	if err != nil {
+		return nil, cleanup, err
+	}
+	repo := repository.Repository{
+		DB: db,
+	}
+
 	pl := &handler.PostLetter{
-		Service: &handler.PostLetterServiceMock{},
+		Service: &service.PostLetter{Repo: &repo},
 	}
 	gl := &handler.GetLetter{
-		Service: &handler.GetLetterServiceMock{},
+		Service: &service.GetLetter{Repo: &repo},
 	}
 
 	r.Route("/letter", func(r chi.Router) {

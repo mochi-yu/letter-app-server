@@ -8,27 +8,30 @@ import (
 )
 
 type PostLetterService interface {
-	PostLetterService(ctx context.Context, letterContent *entity.Test) (string, error)
-}
-
-type PostLetterServiceMock struct{}
-
-func (ps *PostLetterServiceMock) PostLetterService(ctx context.Context, letterContent *entity.Test) (string, error) {
-	if letterContent.Data == "" {
-		return "", errors.New("PostLetterServiceMock error")
-	}
-	return "this_is_uuid", nil
+	PostLetter(ctx context.Context, letterContent *entity.Strokes) (string, error)
 }
 
 type GetLetterService interface {
-	GetLetter(ctx context.Context, letterID string) (*entity.Test, error)
+	GetLetter(ctx context.Context, letterID string) (*entity.Strokes, error)
 }
 
+// テスト用
+type PostLetterServiceMock struct{}
+
+func (ps *PostLetterServiceMock) PostLetter(ctx context.Context, letterContent *entity.Strokes) (string, error) {
+	if letterContent == nil || len(*letterContent) == 0 {
+		return "", errors.New("PostLetterServiceMock error")
+	}
+	return "this_is_uuid plus " + (*letterContent)[0].CompositeOperation, nil
+}
+
+// テスト用
 type GetLetterServiceMock struct{}
 
-func (ps *GetLetterServiceMock) GetLetter(ctx context.Context, letterID string) (*entity.Test, error) {
+func (ps *GetLetterServiceMock) GetLetter(ctx context.Context, letterID string) (*entity.Strokes, error) {
 	if letterID == "" {
 		return nil, errors.New("GetLetterServiceMock error")
 	}
-	return &entity.Test{Data: "this_is_test"}, nil
+	strokesMock := entity.MakeStrokes()
+	return &strokesMock, nil
 }

@@ -1,25 +1,40 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
+	"strconv"
+	"strings"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/mochi-yu/dena-autumn-server/config"
 )
 
-type MySQL struct {
-	db *sql.DB
+const (
+	ErrCodeMySQLDuplicateEntry = 1062 // 重複時のエラーコード
+)
+
+type Repository struct {
+	DB *sql.DB
 }
 
-func NewMySQL() (MySQL, error) {
-	conf, err := config.New()
-	if err != nil {
-		return MySQL{}, err
+func New(ctx context.Context, cfg *config.Config) (*sql.DB, func(), error) {
+	parameters := []string{
+		"tls=true",
+		"charset=utf8mb4",
+		"collation=utf8mb4_general_ci",
+		"interpolateParams=true",
+		// "loc=Asia%2FTokyo",
+		// "parseTime=true",
 	}
 
-	db, err := sql.Open("mysql", conf.DNS)
-	if err != nil {
-		return MySQL{}, err
-	}
+	// dsn := cfg.DBUser + ":" + cfg.DBPassword + "@tcp(" + cfg.DBHost + ")/" + cfg.DBName + "?" + strings.Join(parameters, "&") // 以前はこれで接続成功していた
+	dsn := cfg.DBUser + ":" + cfg.DBPassword +
+		"@tcp(" + cfg.DBHost + ":" + strconv.Itoa(cfg.DBPort) + ")/" + cfg.DBName + "?" + strings.Join(parameters, "&")
 
-	return MySQL{db: db}, nil
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		return nil, func() {}, err
+	}
+	return db, func() { db.Close() }, nil
 }
