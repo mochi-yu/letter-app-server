@@ -5,10 +5,17 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/mochi-yu/dena-autumn-server/config"
 	"github.com/rs/cors"
 )
 
 func main() {
+	cfg, err := config.New()
+	if err != nil {
+		log.Fatalf("main: env config load failed: %v", err)
+	}
+	log.Println(cfg.Port)
+
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", helloHandle)
