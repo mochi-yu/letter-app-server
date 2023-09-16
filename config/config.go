@@ -11,6 +11,7 @@ type Config struct {
 	DBPort     int    `env:"DB_PORT" envDefault:"33306"`
 	DBUser     string `env:"DB_USER" envDefault:"todo"`
 	DBPassword string `env:"DB_PASSWORD" envDefault:"todo"`
+	DNS        string `env:"DNS" envDefault:"sample.com"`
 	DBName     string `env:"DB_NAME" envDefault:"todo"`
 }
 

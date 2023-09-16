@@ -12,6 +12,9 @@ import (
 func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), error) {
 	mux := chi.NewRouter()
 	mux.HandleFunc("/", handler.JsontestHandle)
-
+	mux.Route("/letter", func(r chi.Router) {
+		r.Post("/", handler.PostLetterHandler)
+		r.Get("/{letterId}", handler.GetLetterHandler) // GET /articles
+	})
 	return mux, func() {}, nil
 }
