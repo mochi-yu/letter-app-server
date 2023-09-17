@@ -26,7 +26,6 @@ func (g *GetLetter) GetLetter(ctx context.Context, letterID string) (*entity.Str
 		}
 		return nil, fmt.Errorf("GetLetter: failed to get: %w", err)
 	}
-	fmt.Println(string(letj))
 
 	var letter entity.Strokes
 	if err := json.Unmarshal(letj, &letter); err != nil {
