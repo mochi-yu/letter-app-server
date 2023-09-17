@@ -2,14 +2,13 @@ package entity
 
 import (
 	"math/rand"
-	"strconv"
 )
 
 type Point struct {
-	Time     string  `json:"time"`
+	Time     int64   `json:"time"`
 	X        float64 `json:"x"`
 	Y        float64 `json:"y"`
-	Pressure int     `json:"pressure"`
+	Pressure float64 `json:"pressure"`
 }
 
 type Stroke struct {
@@ -27,7 +26,7 @@ type Strokes []Stroke
 // テスト用
 func MakePoint() Point {
 	return Point{
-		Time:     strconv.FormatInt(rand.Int63(), 10),
+		Time:     rand.Int63(),
 		X:        rand.Float64(),
 		Y:        rand.Float64(),
 		Pressure: 1,
