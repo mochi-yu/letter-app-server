@@ -6,18 +6,18 @@ import (
 	"fmt"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/google/uuid"
+	"github.com/lithammer/shortuuid/v4"
 )
 
 // データの挿入処理
 func (r *Repository) PostLetter(ctx context.Context, letterContent []byte) (letterID string, err error) {
-	uuid, err := uuid.NewRandom()
+	uuid := shortuuid.New()
 	if err != nil {
 		return "", err
 	}
 
 	query := "INSERT INTO LetterList (LetterID, LetterContent) VALUES(?, ?)"
-	_, err = r.DB.ExecContext(ctx, query, uuid.String(), string(letterContent))
+	_, err = r.DB.ExecContext(ctx, query, uuid, string(letterContent))
 	if err != nil {
 		var mysqlErr *mysql.MySQLError
 		if errors.As(err, &mysqlErr) && mysqlErr.Number == ErrCodeMySQLDuplicateEntry {
@@ -26,7 +26,7 @@ func (r *Repository) PostLetter(ctx context.Context, letterContent []byte) (lett
 		return "", err
 	}
 
-	return uuid.String(), nil
+	return uuid, nil
 }
 
 // データの取得処理
