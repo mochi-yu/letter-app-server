@@ -2,7 +2,9 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/mochi-yu/dena-autumn-server/entity"
@@ -15,6 +17,9 @@ type GetLetter struct {
 func (g *GetLetter) GetLetter(ctx context.Context, letterID string) (*entity.Strokes, error) {
 	letj, err := g.Repo.GetLetter(ctx, letterID)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("GetLetter: such letterID does not exist")
+		}
 		return nil, fmt.Errorf("GetLetter: failed to get: %w", err)
 	}
 	fmt.Println(string(letj))
