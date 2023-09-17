@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"strconv"
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -21,16 +20,16 @@ type Repository struct {
 func New(ctx context.Context, cfg *config.Config) (*sql.DB, func(), error) {
 	parameters := []string{
 		"tls=true",
-		"charset=utf8mb4",
-		"collation=utf8mb4_general_ci",
+		// "charset=utf8mb4",
+		// "collation=utf8mb4_general_ci",
 		"interpolateParams=true",
 		// "loc=Asia%2FTokyo",
 		// "parseTime=true",
 	}
 
-	// dsn := cfg.DBUser + ":" + cfg.DBPassword + "@tcp(" + cfg.DBHost + ")/" + cfg.DBName + "?" + strings.Join(parameters, "&") // 以前はこれで接続成功していた
-	dsn := cfg.DBUser + ":" + cfg.DBPassword +
-		"@tcp(" + cfg.DBHost + ":" + strconv.Itoa(cfg.DBPort) + ")/" + cfg.DBName + "?" + strings.Join(parameters, "&")
+	dsn := cfg.DBUser + ":" + cfg.DBPassword + "@tcp(" + cfg.DBHost + ")/" + cfg.DBName + "?" + strings.Join(parameters, "&") // 以前はこれで接続成功していた
+	// dsn := cfg.DBUser + ":" + cfg.DBPassword +
+	// 	"@tcp(" + cfg.DBHost + ":" + strconv.Itoa(cfg.DBPort) + ")/" + cfg.DBName + "?" + strings.Join(parameters, "&")
 
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
