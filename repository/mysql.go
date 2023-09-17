@@ -19,7 +19,7 @@ type Repository struct {
 
 func New(ctx context.Context, cfg *config.Config) (*sql.DB, func(), error) {
 	parameters := []string{
-		// "tls=true",
+		"tls=true",
 		// "charset=utf8mb4",
 		// "collation=utf8mb4_general_ci",
 		"interpolateParams=true",
